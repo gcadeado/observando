@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver import support
+from selenium.webdriver.support.ui import Select
 
 # Intialize the browser
 
@@ -24,9 +25,11 @@ temp_name = datetime.datetime.fromtimestamp(
 os.mkdir(temp_name)
 os.chdir(temp_name)
 
-scrap = Scrapper.scrapper(driver_path=driver_path, options=chrome_options, action_queue=[])
+scrap = Scrapper.scrapper(driver_path=driver_path,
+                          options=chrome_options, action_queue=[])
 
-indexer = Indexer.indexer(scrap, "http://e-negocioscidadesp.prefeitura.sp.gov.br/BuscaLicitacao.aspx")
+indexer = Indexer.indexer(scrap, "http://e-negocioscidadesp.prefeitura.sp.gov.br/BuscaLicitacao.aspx", "", "",
+                          "", "", "", "PREGÃO ELETRÔNICO", "ENCERRADA", "", "", "01/01/2000", "18/03/2019", "01/01/2000", "18/03/2019")
 
 indexer.fill_search_page()
 indexer.search()

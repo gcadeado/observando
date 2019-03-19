@@ -2,6 +2,8 @@ import os
 import datetime
 import Scrapper
 import time
+from selenium.webdriver.support.ui import Select
+
 
 class indexer:
 
@@ -40,32 +42,62 @@ class indexer:
         self.baseQueue = ["self.driver.get(\""+url+"\")"]
 
     def fill_field(self, field, value):
+        print(field, value)
         if value != "":
             if field == "area":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlArea')).select_by_visible_text('" + value + "')")
+                self.baseQueue.append('time.sleep(1)')
                 pass
             elif field == "sub_area":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlSubArea')).select_by_visible_text('" + value + "')")
                 pass
             elif field == "secretaria":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlSecretaria')).select_by_visible_text('" + value + "')")
+                self.baseQueue.append('time.sleep(1)')
                 pass
             elif field == "departamento":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlDepartamento')).select_by_visible_text('" + value + "')")
                 pass
             elif field == "ata_de_registro_de_preco":
+                self.baseQueue.append(
+                    "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$chkAtaRegistroPreco').click()")
+                self.baseQueue.append('time.sleep(1)')
                 pass
             elif field == "modalidade":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlModalidade')).select_by_visible_text('" + value + "')")
                 pass
             elif field == "status":
+                self.baseQueue.append(
+                    "Select(self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ddlStatus')).select_by_visible_text('" + value + "')")
                 pass
             elif field == "numero_da_licitacao":
+                self.baseQueue.append(
+                    "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$txtLicitacao').send_keys('" + value + "')")
                 pass
             elif field == "numero_do_processo":
+                self.baseQueue.append(
+                    "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$txtProcesso').send_keys('" + value + "')")
                 pass
             elif field == "publicacao_data_inicio":
+                self.baseQueue.append(
+                    "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$txtDataPublicacaoInicio').send_keys('" + value + "')")
                 pass
             elif field == "publicacao_data_fim":
+                self.baseQueue.append(
+                    "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$txtDataPublicacaoFim').send_keys('" + value + "')")
                 pass
             elif field == "processo_data_inicio":
+                self.baseQueue.append(
+                    "self.driver.execute_script(\"document.getElementById('ctl00_cphConteudo_frmBuscaLicitacao_txtDataAberturaSessaoInicio').setAttribute('value', '" + value + "')\")")
                 pass
             elif field == "processo_data_fim":
+                self.baseQueue.append(
+                    "self.driver.execute_script(\"document.getElementById('ctl00_cphConteudo_frmBuscaLicitacao_txtDataAberturaSessaoFim').setAttribute('value', '" + value + "')\")")
                 pass
 
     def fill_search_page(self):
@@ -85,25 +117,16 @@ class indexer:
         self.fill_field("processo_data_fim", self.processo_data_fim)
 
     def search(self):
-        self.baseQueue.append("self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ibtBuscar').click()")
+        self.baseQueue.append(
+            "self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ibtBuscar').click()")
 
     def start_scrapping(self):
         self.baseQueue.append("time.sleep(1)")
         for i in self.baseQueue:
-            eval(i.replace("self.","self.scrap."))
+            eval(i.replace("self.", "self.scrap."))
         while True:
-            table = self.scrap.driver.find_element_by_id("ctl00_cphConteudo_gdvResultadoBusca_gdvContent")
-            counter = 1
-            for i in table.find_elements_by_tag_name("tr")[1:]:
-                counter += 1
-                a = [b for b in self.baseQueue]
-                a.append('self.driver.find_element_by_id("ctl00_cphConteudo_gdvResultadoBusca_gdvContent").find_elements_by_tag_name("tr")['+str(counter)+'].find_element_by_tag_name("a").click()')
-                a.append('time.sleep(4)')
-                print(a)
-                s = Scrapper.scrapper(self.scrap.executable_path, self.scrap.options, action_queue=[])
-                s.action_queue = a
+            for i in range(5):
+                s = Scrapper.scrapper(
+                    self.scrap.executable_path, self.scrap.options, action_queue=[])
+                s.action_queue = self.baseQueue
                 s.start()
-            
-            
-            
-
