@@ -88,12 +88,22 @@ class indexer:
         self.baseQueue.append("self.driver.find_element_by_name('ctl00$cphConteudo$frmBuscaLicitacao$ibtBuscar').click()")
 
     def start_scrapping(self):
+        self.baseQueue.append("time.sleep(1)")
         for i in self.baseQueue:
-            eval(i)
+            eval(i.replace("self.","self.scrap."))
         while True:
-            for i in range(5):
+            table = self.scrap.driver.find_element_by_id("ctl00_cphConteudo_gdvResultadoBusca_gdvContent")
+            counter = 1
+            for i in table.find_elements_by_tag_name("tr")[1:]:
+                counter += 1
+                a = [b for b in self.baseQueue]
+                a.append('self.driver.find_element_by_id("ctl00_cphConteudo_gdvResultadoBusca_gdvContent").find_elements_by_tag_name("tr")['+str(counter)+'].find_element_by_tag_name("a").click()')
+                a.append('time.sleep(4)')
+                print(a)
                 s = Scrapper.scrapper(self.scrap.executable_path, self.scrap.options, action_queue=[])
-                s.action_queue = self.baseQueue
+                s.action_queue = a
                 s.start()
+            
+            
             
 
